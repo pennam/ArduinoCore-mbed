@@ -98,6 +98,20 @@ static uint8_t get_mck_div(uint32_t frequency)
    }
 }
 
+static uint32_t get_SCK_x(uint32_t frequency)
+{
+    switch(frequency){
+        case AUDIO_FREQUENCY_8K:     return  2048;  //SCK_x = sai_x_ker_ck/24 =  2047KHz  Ffs = SCK_x/64 = 32KHz
+        //case AUDIO_FREQUENCY_11K:
+        case AUDIO_FREQUENCY_16K:    return  4096;  //SCK_x = sai_x_ker_ck/12 =  4095KHz  Ffs = SCK_x/64 = 64KHz
+        case AUDIO_FREQUENCY_32K:    return  8192;  //SCK_x = sai_x_ker_ck/6  =  8190KHz  Ffs = SCK_x/64 = 128KHz
+        case AUDIO_FREQUENCY_48K:    return 12290;  //SCK_x = sai_x_ker_ck/4  = 12285KHz  Ffs = SCK_x/64 = 192KHz
+        case 64000:                  return 16384;  //SCK_x = sai_x_ker_ck/3  = 16380KHz  Ffs = SCK_x/64 = 256KHz
+        case AUDIO_FREQUENCY_96K:    return 24576;  //SCK_x = sai_x_ker_ck/2  = 24571KHz  Ffs = SCK_x/64 = 384KHz
+        //case AUDIO_FREQUENCY_192K:   return  1;  //SCK_x = sai_x_ker_ck/1  = 49142KHz  Ffs = SCK_x/64 = 768KHz
+        default:                     return  0;  //Same as 1
+   }
+}
 
 // TODO: this needs to become a library function
 bool isBoardRev2() {
@@ -169,7 +183,7 @@ int py_audio_init(size_t g_channels, uint32_t frequency, int gain_db, float high
         return 0;
     }
 
-    uint32_t decimation_factor = 128;//AUDIO_SAI_FREQKHZ / (frequency / 1000);
+    uint32_t decimation_factor = (get_SCK_x(frequency) / 2) / (frequency / 1000);
     uint32_t decimation_factor_const = get_decimation_factor(decimation_factor);
     if (decimation_factor_const == 0) {
         return 0;
