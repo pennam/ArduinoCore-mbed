@@ -193,6 +193,18 @@ int py_audio_init(size_t channels, uint32_t frequency, int gain_db, float highpa
     }
     uint32_t samples_per_channel = (PDM_BUFFER_SIZE * 8) / (decimation_factor * g_channels * 2); // Half a transfer
 
+    /* DEBUG */
+    uint32_t hse_clock = isBoardRev2() ? 25000 : 27000;
+    printf("PCM frequancy Hz: %d\n\r", frequency);
+    printf("PDM input channels: %d\n\r", g_channels);
+    printf("PCM output channels: %d\n\r", g_o_channels);
+    printf("PDM decimation_factor: %d\n\r", decimation_factor);
+    printf("PDM decimation_factor_const: %d\n\r", decimation_factor_const);
+    printf("PDM SAI_ker_clock MHz: %d\n\r", (((hse_clock / rcc_ex_clk_init_struct.PLL2.PLL2M) * rcc_ex_clk_init_struct.PLL2.PLL2N)/ rcc_ex_clk_init_struct.PLL2.PLL2P));
+    printf("PDM MCK_DIV: %d\n\r", get_mck_div(frequency));
+    printf("PDM Clock MHz: %d\n\r", ((((hse_clock / rcc_ex_clk_init_struct.PLL2.PLL2M) * rcc_ex_clk_init_struct.PLL2.PLL2N)/ rcc_ex_clk_init_struct.PLL2.PLL2P)/(get_mck_div(frequency))));
+    printf("PDM samples_per_channel %d\n\r", samples_per_channel);
+
     hsai.Instance                    = AUDIO_SAI;
     hsai.Init.Protocol               = SAI_FREE_PROTOCOL;
     hsai.Init.AudioMode              = SAI_MODEMASTER_RX;
