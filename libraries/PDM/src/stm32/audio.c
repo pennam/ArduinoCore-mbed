@@ -23,6 +23,7 @@ static DMA_HandleTypeDef hdma_sai_rx;
 volatile uint16_t *g_pcmbuf = NULL;
 
 static int g_channels = AUDIO_SAI_NBR_CHANNELS;
+static int g_o_channels = AUDIO_SAI_NBR_CHANNELS;
 static PDM_Filter_Handler_t  PDM_FilterHandler[2];
 static PDM_Filter_Config_t   PDM_FilterConfig[2];
 
@@ -147,7 +148,7 @@ void sai_init()
     HAL_GPIO_Init(AUDIO_SAI_D1_PORT, &GPIO_InitStruct);
 }
 
-int py_audio_init(size_t g_channels, uint32_t frequency, int gain_db, float highpass)
+int py_audio_init(size_t channels, uint32_t frequency, int gain_db, float highpass)
 {
 
     RCC_PeriphCLKInitTypeDef rcc_ex_clk_init_struct;
@@ -179,8 +180,10 @@ int py_audio_init(size_t g_channels, uint32_t frequency, int gain_db, float high
         return 0;
     }
 
-    if (g_channels != 1 && g_channels != 2) {
+    if (channels != 1 && channels != 2) {
         return 0;
+    } else {
+        g_o_channels = channels;
     }
 
     uint32_t decimation_factor = (get_SCK_x(frequency) / 2) / (frequency / 1000);
@@ -280,7 +283,7 @@ int py_audio_init(size_t g_channels, uint32_t frequency, int gain_db, float high
         PDM_FilterHandler[i].bit_order  = PDM_FILTER_BIT_ORDER_MSB;
         PDM_FilterHandler[i].endianness = PDM_FILTER_ENDIANNESS_LE;
         PDM_FilterHandler[i].high_pass_tap = (uint32_t) (highpass * 2147483647U); // coff * (2^31-1)
-        PDM_FilterHandler[i].out_ptr_channels = g_channels;
+        PDM_FilterHandler[i].out_ptr_channels = g_o_channels;
         PDM_FilterHandler[i].in_ptr_channels  = g_channels;
         PDM_Filter_Init(&PDM_FilterHandler[i]);
 
