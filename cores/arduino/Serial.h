@@ -36,11 +36,14 @@ typedef struct _mbed_serial mbed_serial;
 typedef struct _mbed_usb_serial mbed_usb_serial;
 
 namespace arduino {
+	
 
 class SoftwareFC {
 	public:
 	    SoftwareFC(int rts, int cts)  : _rts((PinName)rts), _cts((PinName)cts) {
 			_enabled = true;
+			mbed::DigitalOut rts_pin(_rts);
+			rts_pin = 0;
 		}
 		void setRTS() {
 			if(_enabled) {
