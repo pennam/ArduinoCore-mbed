@@ -99,12 +99,20 @@ void UART::begin(unsigned long baudrate) {
 		_serial->obj = NULL;
 	}
 	if (_serial->obj == NULL) {
+		printf("New uart device\n");
 		_serial->obj = new mbed::UnbufferedSerial(_tx, _rx, baudrate);
 	} else {
 		_serial->obj->baud(baudrate);
 	}
-	if (_rts != NC) {
-		_serial->obj->set_flow_control(mbed::SerialBase::Flow::RTSCTS, _rts, _cts);
+	if (_rts != NC && _cts != NC) {
+		printf("Set flow control\n");
+		if(pinmap_find_peripheral(_rts, PinMap_UART_RTS) != NC && 
+		   pinmap_find_peripheral(_cts, PinMap_UART_CTS) != NC) {
+            _serial->obj->set_flow_control(mbed::SerialBase::Flow::RTSCTS, _rts, _cts);
+		} else {
+			printf("Peripheral HW flow control not available\n");
+		    _flowControl = new SoftwareFC(_rts, _cts);
+		}
 	}
 	if (_serial->obj != NULL) {
 		_serial->obj->attach(mbed::callback(this, &UART::on_rx), mbed::SerialBase::RxIrq);
@@ -121,6 +129,9 @@ void UART::on_rx() {
 		char c;
 		_serial->obj->read(&c, 1);
 		rx_buffer.store_char(c);
+		if(rx_buffer.available() < 16) {
+			_flowControl->setRTS();
+		}
 	}
 }
 
@@ -163,6 +174,9 @@ int UART::read() {
 		return _SerialUSB.read();
 	}
 #endif
+    if(rx_buffer.available()> 16) {
+		_flowControl->clearRTS();
+	}
 	return rx_buffer.read_char();
 }
 
@@ -176,7 +190,7 @@ size_t UART::write(uint8_t c) {
 		return _SerialUSB.write(c);
 	}
 #endif
-	while (!_serial->obj->writeable()) {}
+	while (!_serial->obj->writeable() && (_flowControl->CTS() == false)) {}
 	int ret = _serial->obj->write(&c, 1);
 	return ret == -1 ? 0 : 1;
 }
@@ -187,10 +201,15 @@ size_t UART::write(const uint8_t* c, size_t len) {
 		return _SerialUSB.write(c, len);
 	}
 #endif
-	while (!_serial->obj->writeable()) {}
 	_serial->obj->set_blocking(true);
-	int ret = _serial->obj->write(c, len);
-	return ret == -1 ? 0 : len;
+	int count = len;
+	int ret = 1;
+	while(count && (ret == 1) ) {
+		ret = _serial->obj->write(c, 1);
+		c++;
+		count--;
+	}
+	return count != 0 ? 0 : len;
 }
 
 void UART::block_tx(int _a) {

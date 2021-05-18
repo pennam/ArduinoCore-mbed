@@ -25,6 +25,7 @@
 #include "api/HardwareSerial.h"
 #include "PinNames.h"
 #include <platform/FileHandle.h>
+#include "mbed.h"
 
 #ifdef __cplusplus
 
@@ -35,6 +36,36 @@ typedef struct _mbed_serial mbed_serial;
 typedef struct _mbed_usb_serial mbed_usb_serial;
 
 namespace arduino {
+
+class SoftwareFC {
+	public:
+	    SoftwareFC(int rts, int cts)  : _rts((PinName)rts), _cts((PinName)cts) {
+			_enabled = true;
+		}
+		void setRTS() {
+			if(_enabled) {
+				mbed::DigitalOut rts_pin(_rts);
+				rts_pin = 1;
+			} 
+		};
+		void clearRTS() {
+			if(_enabled) {
+				mbed::DigitalOut rts_pin(_rts);
+				rts_pin = 0;
+			}
+		};
+		bool CTS() {
+			if(_enabled) {
+				mbed::DigitalIn cts_pin(_cts);
+				return cts_pin.read() == 0 ? true : false; 
+			} else {
+				return true;
+			} 
+		};
+    private:
+	    PinName _rts, _cts;
+	    bool _enabled = false;
+};
 
 class UART : public HardwareSerial {
 	public:
@@ -76,6 +107,7 @@ class UART : public HardwareSerial {
 		RingBufferN<256> rx_buffer;
 		uint8_t intermediate_buf[4];
 		bool is_usb = false;
+		SoftwareFC* _flowControl = NULL;
 };
 }
 
