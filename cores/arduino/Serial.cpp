@@ -36,6 +36,7 @@ using namespace arduino;
 
 struct _mbed_serial {
 	mbed::UnbufferedSerial* obj;
+	//SoftwareFC* _flowControl = NULL;
 };
 
 void UART::begin(unsigned long baudrate, uint16_t config) {
@@ -110,7 +111,7 @@ void UART::begin(unsigned long baudrate) {
 		   pinmap_find_peripheral(_cts, PinMap_UART_CTS) != NC) {
             _serial->obj->set_flow_control(mbed::SerialBase::Flow::RTSCTS, _rts, _cts);
 		} else {
-			printf("Peripheral HW flow control not available\n");
+		    printf("Peripheral HW flow control not available\n");
 		    _flowControl = new SoftwareFC(_rts, _cts);
 		}
 	}
@@ -129,7 +130,8 @@ void UART::on_rx() {
 		char c;
 		_serial->obj->read(&c, 1);
 		rx_buffer.store_char(c);
-		if(rx_buffer.available() < 16) {
+		if(rx_buffer.availableForStore() < 16) {
+			//printf("Set rts and wait read call from application\n");
 			_flowControl->setRTS();
 		}
 	}
@@ -174,7 +176,7 @@ int UART::read() {
 		return _SerialUSB.read();
 	}
 #endif
-    if(rx_buffer.available()> 16) {
+    if(rx_buffer.availableForStore() > 16) {
 		_flowControl->clearRTS();
 	}
 	return rx_buffer.read_char();
@@ -190,7 +192,7 @@ size_t UART::write(uint8_t c) {
 		return _SerialUSB.write(c);
 	}
 #endif
-	while (!_serial->obj->writeable() && (_flowControl->CTS() == false)) {}
+	while (!_serial->obj->writeable() || (_flowControl->CTS() == false)) {}
 	int ret = _serial->obj->write(&c, 1);
 	return ret == -1 ? 0 : 1;
 }
