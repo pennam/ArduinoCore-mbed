@@ -38,7 +38,7 @@ namespace arduino {
 
 class UART : public HardwareSerial {
 	public:
-		UART(int tx, int rx, int rts, int cts) : _tx((PinName)tx), _rx((PinName)rx), _rts((PinName)rts), _cts((PinName)cts) {}
+		UART(int tx, int rx, int rts, int cts) : _tx((PinName)tx), _rx((PinName)rx), _rts((PinName)rts), _cts((PinName)cts) {printf("Arduino serial rts %d, cts %d\n", _rts, _cts);}
 		UART() {
 			is_usb = true;
 		}
@@ -46,6 +46,7 @@ class UART : public HardwareSerial {
 		void begin(unsigned long baudrate, uint16_t config);
 		void end();
 		int available(void);
+		int availableForStore(void);
 		int peek(void);
 		int read(void);
 		void flush(void);
@@ -54,6 +55,10 @@ class UART : public HardwareSerial {
 		using Print::write; // pull in write(str) and write(buf, size) from Print
 		operator bool();
 		operator mbed::FileHandle*();	// exposes the internal mbed object
+
+		mbed_serial* _serial = NULL;
+		void on_rx();
+		
 
 #if defined(SERIAL_CDC)
 		uint32_t baud();
@@ -65,12 +70,10 @@ class UART : public HardwareSerial {
 #endif
 
 	private:
-		void on_rx();
 		void block_tx(int);
 		bool _block;
 		// See https://github.com/ARMmbed/mbed-os/blob/f5b5989fc81c36233dbefffa1d023d1942468d42/targets/TARGET_NORDIC/TARGET_NRF5x/TARGET_NRF52/serial_api.c#L76
 		const size_t WRITE_BUFF_SZ = 32;
-		mbed_serial* _serial = NULL;
 		mbed_usb_serial* _usb_serial = NULL;
 		PinName _tx, _rx, _rts, _cts;
 		RingBufferN<256> rx_buffer;

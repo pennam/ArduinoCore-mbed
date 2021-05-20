@@ -94,6 +94,7 @@ void UART::begin(unsigned long baudrate) {
 		return;
 	}
 #endif
+    printf("Arduino UART begin\n");
 	if (_serial == NULL) {
 		_serial = new mbed_serial;
 		_serial->obj = NULL;
@@ -103,11 +104,16 @@ void UART::begin(unsigned long baudrate) {
 	} else {
 		_serial->obj->baud(baudrate);
 	}
-	if (_rts != NC) {
-		_serial->obj->set_flow_control(mbed::SerialBase::Flow::RTSCTS, _rts, _cts);
-	}
-	if (_serial->obj != NULL) {
-		_serial->obj->attach(mbed::callback(this, &UART::on_rx), mbed::SerialBase::RxIrq);
+
+	if (pinmap_find_peripheral(_rts, PinMap_UART_RTS) != NC && 
+	    pinmap_find_peripheral(_cts, PinMap_UART_CTS) != NC) {
+		printf("UART HW flow control\n");
+	    if (_rts != NC) {
+		    _serial->obj->set_flow_control(mbed::SerialBase::Flow::RTSCTS, _rts, _cts);
+	    }
+	    if (_serial->obj != NULL) {
+		    _serial->obj->attach(mbed::callback(this, &UART::on_rx), mbed::SerialBase::RxIrq);
+	    }
 	}
 }
 
@@ -146,6 +152,15 @@ int UART::available() {
 	}
 #endif
 	return rx_buffer.available();
+}
+
+int UART::availableForStore() {
+#if defined(SERIAL_CDC)
+	if (is_usb) {
+		return _SerialUSB.available();
+	}
+#endif
+	return rx_buffer.availableForStore();
 }
 
 int UART::peek() {
