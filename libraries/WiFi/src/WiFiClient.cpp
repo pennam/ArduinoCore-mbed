@@ -66,7 +66,7 @@ int arduino::WiFiClient::connectSSL(SocketAddress socketAddress){
 	}
 	sock->set_timeout(SOCKET_TIMEOUT);	
 	nsapi_error_t returnCode = static_cast<TLSSocket*>(sock)->connect(socketAddress);
-	return returnCode == NSAPI_ERROR_OK ? 1 : 0;
+	return returnCode == NSAPI_ERROR_OK ? 1 : returnCode;
 }
 
 int arduino::WiFiClient::connectSSL(IPAddress ip, uint16_t port) {
