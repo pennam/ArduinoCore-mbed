@@ -94,7 +94,9 @@ recipe.objcopy.eep.pattern=
 recipe.objcopy.bin.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.bin.flags} {compiler.elf2hex.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
 
 ## Create output (hex file)
-recipe.objcopy.hex.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.hex.flags} {compiler.elf2hex.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.hex"
+#recipe.objcopy.hex.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.hex.flags} {compiler.elf2hex.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.hex"
+recipe.objcopy.hex.pattern="/home/pennam/mcuboot_portenta/python/bin/python3" /home/pennam/mcuboot_portenta/mbed-mcuboot-demo/mcuboot/scripts/imgtool.py sign -k /home/pennam/mcuboot_portenta/signing-keys.pem --align 32 --max-align 32 -v 1.2.3+4 --header-size 131072 --pad-header -S 0xC0000 --pad -x 0x8020000 "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.sign"
+
 
 ## Compute size
 recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
@@ -162,7 +164,7 @@ tools.dfu-util.cmd=dfu-util
 
 tools.dfu-util.upload.params.verbose=-d
 tools.dfu-util.upload.params.quiet=
-tools.dfu-util.upload.pattern="{path}/{cmd}" --device {upload.vid}:{upload.pid} -D "{build.path}/{build.project_name}.bin" -a{upload.interface} --dfuse-address={upload.address}:leave
+tools.dfu-util.upload.pattern="{path}/{cmd}" --device {upload.vid}:{upload.pid} -D "{build.path}/{build.project_name}.sign" -a{upload.interface} --dfuse-address={upload.address}:leave
 
 #
 # PICOTOOL
