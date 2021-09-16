@@ -56,6 +56,18 @@ compiler.elf2hex.extra_flags=
 build.library_discovery_phase=0
 build.library_discovery_phase_flag=-DARDUINO_LIBRARY_DISCOVERY_PHASE={build.library_discovery_phase}
 
+# imgtool variables
+# ----
+imgtool.path={runtime.hardware.path}/tools/imgtool/1.7.2
+imgtool.cmd=imgtool
+imgtool.keys.path={runtime.hardware.path}/tools/imgtool/keys
+imgtool.sign.name=signing_keys.pem
+imgtool.encrypt.name=encrypt_keys.pem
+imgtool.alignment=32
+imgtool.header_size=131072
+imgtool.slot_size=0xC0000
+imgtool.version=1.2.3+4
+
 # USB Flags
 # ---------
 build.usb_flags=
@@ -94,9 +106,16 @@ recipe.objcopy.eep.pattern=
 recipe.objcopy.bin.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.bin.flags} {compiler.elf2hex.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
 
 ## Create output (hex file)
-#recipe.objcopy.hex.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.hex.flags} {compiler.elf2hex.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.hex"
-recipe.objcopy.hex.pattern="/home/pennam/mcuboot_portenta/python/bin/python3" /home/pennam/mcuboot_portenta/mbed-mcuboot-demo/mcuboot/scripts/imgtool.py sign -k /home/pennam/mcuboot_portenta/signing-keys.pem --align 32 --max-align 32 -v 1.2.3+4 --header-size 131072 --pad-header -S 0xC0000 --pad -x 0x8020000 "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.sign"
+recipe.objcopy.hex.pattern="{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.hex.flags} {compiler.elf2hex.extra_flags} "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.hex"
+#recipe.objcopy.hex.pattern="/home/pennam/mcuboot_portenta/python/bin/python3" /home/pennam/mcuboot_portenta/mbed-mcuboot-demo/mcuboot/scripts/imgtool.py sign -k /home/pennam/mcuboot_portenta/signing_keys.pem --align 32 --max-align 32 -v 1.2.3+4 --header-size 131072 --pad-header -S 0xC0000 --pad -x 0x8020000 --confirm "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.sign"
 
+## Create output signed image (bin file)
+recipe.hooks.objcopy.postobjcopy.1.pattern="{imgtool.path}/{imgtool.cmd}" sign -k "{imgtool.keys.path}/{imgtool.sign.name}" --align "{imgtool.alignment}" --max-align "{imgtool.alignment}" --header-size "{imgtool.header_size}" --pad-header --slot-size "{imgtool.slot_size}" --version "{imgtool.version}" --pad --confirm "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.sig.pad.con.bin"
+recipe.hooks.objcopy.postobjcopy.2.pattern="{imgtool.path}/{imgtool.cmd}" sign -k "{imgtool.keys.path}/{imgtool.sign.name}" --align "{imgtool.alignment}" --max-align "{imgtool.alignment}" --header-size "{imgtool.header_size}" --pad-header --slot-size "{imgtool.slot_size}" --version "{imgtool.version}" --pad "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.sig.pad.bin"
+recipe.hooks.objcopy.postobjcopy.3.pattern="{imgtool.path}/{imgtool.cmd}" sign -k "{imgtool.keys.path}/{imgtool.sign.name}" --align "{imgtool.alignment}" --max-align "{imgtool.alignment}" --header-size "{imgtool.header_size}" --pad-header --slot-size "{imgtool.slot_size}" --version "{imgtool.version}" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.sig.bin"
+recipe.hooks.objcopy.postobjcopy.4.pattern="{imgtool.path}/{imgtool.cmd}" sign -k "{imgtool.keys.path}/{imgtool.sign.name}" -E "{imgtool.keys.path}/{imgtool.encrypt.name}" --align "{imgtool.alignment}" --max-align "{imgtool.alignment}" --header-size "{imgtool.header_size}" --pad-header --slot-size "{imgtool.slot_size}" --version "{imgtool.version}" --pad --confirm "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.enc.pad.con.bin"
+recipe.hooks.objcopy.postobjcopy.5.pattern="{imgtool.path}/{imgtool.cmd}" sign -k "{imgtool.keys.path}/{imgtool.sign.name}" -E "{imgtool.keys.path}/{imgtool.encrypt.name}" --align "{imgtool.alignment}" --max-align "{imgtool.alignment}" --header-size "{imgtool.header_size}" --pad-header --slot-size "{imgtool.slot_size}" --version "{imgtool.version}" --pad "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.enc.pad.bin"
+recipe.hooks.objcopy.postobjcopy.6.pattern="{imgtool.path}/{imgtool.cmd}" sign -k "{imgtool.keys.path}/{imgtool.sign.name}" -E "{imgtool.keys.path}/{imgtool.encrypt.name}" --align "{imgtool.alignment}" --max-align "{imgtool.alignment}" --header-size "{imgtool.header_size}" --pad-header --slot-size "{imgtool.slot_size}" --version "{imgtool.version}" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.enc.bin"
 
 ## Compute size
 recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
@@ -164,7 +183,7 @@ tools.dfu-util.cmd=dfu-util
 
 tools.dfu-util.upload.params.verbose=-d
 tools.dfu-util.upload.params.quiet=
-tools.dfu-util.upload.pattern="{path}/{cmd}" --device {upload.vid}:{upload.pid} -D "{build.path}/{build.project_name}.sign" -a{upload.interface} --dfuse-address={upload.address}:leave
+tools.dfu-util.upload.pattern="{path}/{cmd}" --device {upload.vid}:{upload.pid} -D "{build.path}/{build.project_name}.enc.pad.con.bin" -a{upload.interface} --dfuse-address={upload.address}:leave
 
 #
 # PICOTOOL
