@@ -13,7 +13,7 @@ edge_control.build.fpu=-mfpu=fpv4-sp-d16
 edge_control.build.float-abi=-mfloat-abi=softfp
 edge_control.build.board=EDGE_CONTROL
 edge_control.build.ldscript=linker_script.ld
-edge_control.build.postbuild.cmd=true
+edge_control.build.postbuild.cmd=imgtool exit
 edge_control.compiler.mbed.arch.define=-DARDUINO_ARCH_NRF52840
 edge_control.compiler.mbed.defines={build.variant.path}/defines.txt
 edge_control.compiler.mbed.ldflags={build.variant.path}/ldflags.txt
@@ -137,7 +137,7 @@ envie_m4.menu.split.100_0.build.extra_ldflags=-DCM4_BINARY_START=0x60000000 -DCM
 envie_m4.build.architecture=cortex-m4
 envie_m4.build.board=PORTENTA_H7_M4
 envie_m4.build.ldscript=linker_script.ld
-envie_m4.build.postbuild.cmd=true
+envie_m4.build.postbuild.cmd=imgtool exit
 envie_m4.compiler.mbed.arch.define=
 envie_m4.compiler.mbed.defines={build.variant.path}/defines.txt
 envie_m4.compiler.mbed.ldflags={build.variant.path}/ldflags.txt
@@ -192,7 +192,7 @@ nano33ble.build.fpu=-mfpu=fpv4-sp-d16
 nano33ble.build.float-abi=-mfloat-abi=softfp
 nano33ble.build.board=ARDUINO_NANO33BLE
 nano33ble.build.ldscript=linker_script.ld
-nano33ble.build.postbuild.cmd=true
+nano33ble.build.postbuild.cmd=imgtool exit
 nano33ble.compiler.mbed.arch.define=-DARDUINO_ARCH_NRF52840
 nano33ble.compiler.mbed.defines={build.variant.path}/defines.txt
 nano33ble.compiler.mbed.ldflags={build.variant.path}/ldflags.txt
@@ -238,7 +238,7 @@ nanorp2040connect.build.float-abi=
 nanorp2040connect.build.architecture=cortex-m0plus
 nanorp2040connect.build.board=NANO_RP2040_CONNECT
 nanorp2040connect.build.ldscript=linker_script.ld
-nanorp2040connect.build.postbuild.cmd=true
+nanorp2040connect.build.postbuild.cmd=imgtool exit
 nanorp2040connect.compiler.mbed.arch.define=-DARDUINO_ARCH_RP2040
 nanorp2040connect.compiler.mbed.defines={build.variant.path}/defines.txt
 nanorp2040connect.compiler.mbed.ldflags={build.variant.path}/ldflags.txt
@@ -282,7 +282,7 @@ pico.build.float-abi=
 pico.build.architecture=cortex-m0plus
 pico.build.board=RASPBERRY_PI_PICO
 pico.build.ldscript=linker_script.ld
-pico.build.postbuild.cmd=true
+pico.build.postbuild.cmd=imgtool exit
 pico.compiler.mbed.arch.define=-DARDUINO_ARCH_RP2040
 pico.compiler.mbed.defines={build.variant.path}/defines.txt
 pico.compiler.mbed.ldflags={build.variant.path}/ldflags.txt
