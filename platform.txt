@@ -172,7 +172,7 @@ tools.dfu-util.cmd=dfu-util
 
 tools.dfu-util.upload.params.verbose=-d
 tools.dfu-util.upload.params.quiet=
-tools.dfu-util.upload.pattern="{path}/{cmd}" --device {upload.vid}:{upload.pid} -D "{build.path}/{build.project_name}.enc.pad.con.bin" -a{upload.interface} --dfuse-address={upload.address}:leave
+tools.dfu-util.upload.pattern="{path}/{cmd}" --device {upload.vid}:{upload.pid} -D "{build.path}/{build.project_name}.bin" -a{upload.interface} --dfuse-address={upload.address}:leave
 
 #
 # PICOTOOL
@@ -189,13 +189,13 @@ tools.picotool.upload.pattern="{path}/{cmd}" {upload.verbose} -D "{build.path}/{
 # IMGTOOL
 #
 
-tools.imgtool.path={runtime.hardware.path}/mbed/imgtool/1.7.2
+tools.imgtool.path={runtime.hardware.path}/mbed/imgtool/1.7.0
 tools.imgtool.cmd=imgtool
 tools.imgtool.keys.path={runtime.hardware.path}/mbed/imgtool/keys
 tools.imgtool.sign.name=signing_keys.pem
 tools.imgtool.encrypt.name=encrypt_keys.pem
 
-tools.imgtool.build.pattern=sign --key "{tools.imgtool.keys.path}/{tools.imgtool.sign.name}"  --encrypt "{tools.imgtool.keys.path}/{tools.imgtool.encrypt.name}" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.secure.bin" --align {build.alignment} --max-align {build.alignment} --version {build.version} --header-size {build.header_size} --pad-header --slot-size {build.slot_size} --pad --confirm
+tools.imgtool.build.pattern=sign --key "{tools.imgtool.keys.path}/{tools.imgtool.sign.name}"  --encrypt "{tools.imgtool.keys.path}/{tools.imgtool.encrypt.name}" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.bin" --align {build.alignment} --max-align {build.alignment} --version {build.version} --header-size {build.header_size} --pad-header --slot-size {build.slot_size} --pad --confirm
 
 #
 # GDB (Debugger)
