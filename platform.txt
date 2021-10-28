@@ -191,9 +191,9 @@ tools.picotool.upload.pattern="{path}/{cmd}" {upload.verbose} -D "{build.path}/{
 
 tools.imgtool.path={runtime.hardware.path}/mbed/imgtool/1.7.0/linux
 tools.imgtool.cmd=imgtool
-tools.imgtool.keys.path={runtime.hardware.path}/mbed/imgtool/keys
-tools.imgtool.sign.name=signing_keys.pem
-tools.imgtool.encrypt.name=encrypt_keys.pem
+tools.imgtool.keys.path={runtime.hardware.path}/mbed/libraries/Portenta_System/MCUBoot_Default_Keys
+tools.imgtool.sign.name=signing_key.pem
+tools.imgtool.encrypt.name=encrypt_key.pem
 
 tools.imgtool.build.pattern=sign --key "{tools.imgtool.keys.path}/{tools.imgtool.sign.name}"  --encrypt "{tools.imgtool.keys.path}/{tools.imgtool.encrypt.name}" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.bin" --align {build.alignment} --max-align {build.alignment} --version {build.version} --header-size {build.header_size} --pad-header --slot-size {build.slot_size} --pad --confirm
 
