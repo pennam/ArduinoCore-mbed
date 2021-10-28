@@ -7,6 +7,9 @@
 
 int boot_set_pending(int permanent);
 int boot_set_confirmed(void);
+int confirmRunningSketch(void) {
+    return boot_set_confirmed();
+}
 
 #ifdef __cplusplus
 }
