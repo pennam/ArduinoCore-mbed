@@ -45,6 +45,7 @@ edge_control.bootloader.file=EDGE_CONTROL/bootloader.hex
 ##############################################################
 
 menu.split=Flash split
+menu.security=Security setting
 
 envie_m7.name=Arduino Portenta H7 (M7 core)
 envie_m7.build.core=arduino
@@ -54,6 +55,9 @@ envie_m7.build.compiler_path={runtime.tools.arm-none-eabi-gcc-7-2017q4.path}/bin
 envie_m7.menu.split.50_50=1MB M7 + 1MB M4
 envie_m7.menu.split.75_25=1.5MB M7 + 0.5MB M4
 envie_m7.menu.split.100_0=2MB M7 + M4 in SDRAM
+
+envie_m7.menu.security.none=None
+envie_m7.menu.security.sien=Signature + Encryption
 
 envie_m7.build.variant=PORTENTA_H7_M7
 envie_m7.build.mcu=cortex-m7
@@ -70,7 +74,8 @@ envie_m7.build.slot_size=0xC0000
 envie_m7.build.header_size=131072
 envie_m7.build.alignment=32
 envie_m7.build.version=1.2.3+4
-envie_m7.build.postbuild.cmd="{tools.imgtool.path}/{tools.imgtool.cmd}" {tools.imgtool.build.pattern}
+envie_m7.menu.security.sien.build.postbuild.cmd="{tools.imgtool.path}/{tools.imgtool.cmd}" {tools.imgtool.build.pattern}
+envie_m7.menu.security.none.build.postbuild.cmd="{tools.imgtool.path}/{tools.imgtool.cmd}" exit
 envie_m7.compiler.mbed.arch.define=
 envie_m7.compiler.mbed.defines={build.variant.path}/defines.txt
 envie_m7.compiler.mbed.ldflags={build.variant.path}/ldflags.txt
@@ -91,8 +96,10 @@ envie_m7.upload.protocol=
 envie_m7.upload.transport=
 envie_m7.upload.vid=0x2341
 envie_m7.upload.pid=0x035b
-envie_m7.upload.address=0x90000000
-envie_m7.upload.interface=1
+envie_m7.menu.security.none.upload.interface=0
+envie_m7.menu.security.sien.upload.interface=1
+envie_m7.menu.security.none.upload.address=0x08040000
+envie_m7.menu.security.sien.upload.address=0x90000000
 envie_m7.upload.use_1200bps_touch=true
 envie_m7.upload.wait_for_upload_port=true
 envie_m7.upload.native_usb=true
