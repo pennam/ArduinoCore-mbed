@@ -189,7 +189,7 @@ tools.picotool.upload.pattern="{path}/{cmd}" {upload.verbose} -D "{build.path}/{
 # IMGTOOL
 #
 
-tools.imgtool.path={runtime.hardware.path}/mbed/imgtool/1.7.0
+tools.imgtool.path={runtime.hardware.path}/mbed/imgtool/1.7.0/linux
 tools.imgtool.cmd=imgtool
 tools.imgtool.keys.path={runtime.hardware.path}/mbed/imgtool/keys
 tools.imgtool.sign.name=signing_keys.pem
