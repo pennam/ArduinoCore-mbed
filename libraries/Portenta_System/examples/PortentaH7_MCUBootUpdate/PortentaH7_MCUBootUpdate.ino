@@ -17,12 +17,19 @@ mbed::FlashIAP flash;
 uint32_t bootloader_data_offset = 0x1F000;
 uint8_t* bootloader_data = (uint8_t*)(BOOTLOADER_ADDR + bootloader_data_offset);
 
+uint32_t bootloader_identification_offset = 0x1F040;
+uint8_t* bootloader_identification = (uint8_t*)(BOOTLOADER_ADDR + bootloader_identification_offset);
+
+bool writeLoader = false;
+bool writeKeys   = false;
+
 void setup() {  
   Serial.begin(115200);
   while (!Serial) {}
 
   uint8_t currentBootloaderVersion = bootloader_data[1];
   uint8_t availableBootloaderVersion = (mcuboot_bin + bootloader_data_offset)[1];
+  String LoaderIdentifier = String(bootloader_identification, 16);
 
   Serial.println("Magic Number (validation): " + String(bootloader_data[0], HEX));
   Serial.println("Bootloader version: " + String(currentBootloaderVersion));
@@ -35,16 +42,21 @@ void setup() {
   Serial.println("Has Video output: " + String(bootloader_data[8] == 1 ? "Yes" : "No"));
   Serial.println("Has Crypto chip: " + String(bootloader_data[9] == 1 ? "Yes" : "No"));
 
-  if (availableBootloaderVersion > currentBootloaderVersion) {
-    Serial.print("\nA new bootloader version is available: v" + String(availableBootloaderVersion));
-    Serial.println(" (Your version: v" + String(currentBootloaderVersion) + ")");
-    Serial.println("Do you want to update the bootloader? Y/[n]");
-  } else if(availableBootloaderVersion < currentBootloaderVersion){ 
-    Serial.println("\nA newer bootloader version is already installed: v" + String(currentBootloaderVersion));    
-    Serial.println("Do you want to downgrade the bootloader to v" + String(availableBootloaderVersion) + "? Y/[n]");
+  if (LoaderIdentifier.equals("MCUBoot Arduino")) {
+    if (availableBootloaderVersion > currentBootloaderVersion) {
+      Serial.print("\nA new bootloader version is available: v" + String(availableBootloaderVersion));
+      Serial.println(" (Your version: v" + String(currentBootloaderVersion) + ")");
+      Serial.println("Do you want to update the bootloader? Y/[n]");
+    } else if(availableBootloaderVersion < currentBootloaderVersion){
+      Serial.println("\nA newer bootloader version is already installed: v" + String(currentBootloaderVersion));
+      Serial.println("Do you want to downgrade the bootloader to v" + String(availableBootloaderVersion) + "? Y/[n]");
+    } else {
+      Serial.println("\nThe latest version of the bootloader is already installed (v" + String(currentBootloaderVersion) + ").");
+      Serial.println("Do you want to update the bootloader anyway? Y/[n]");
+    }
   } else {
-    Serial.println("\nThe latest version of the bootloader is already installed (v" + String(currentBootloaderVersion) + ").");
-    Serial.println("Do you want to update the bootloader anyway? Y/[n]");
+    Serial.println("\nA different bootloader version is available: MCUBoot Arduino v" + String(availableBootloaderVersion));
+    Serial.println("Do you want to update the bootloader? Y/[n]");
   }
   
   bool confirmation = false;
@@ -54,7 +66,7 @@ void setup() {
       switch (choice) {
         case 'y':
         case 'Y':
-          applyUpdate(BOOTLOADER_ADDR);
+          writeLoader  = true;
           confirmation = true;
           break;
         case 'n':
@@ -65,6 +77,32 @@ void setup() {
           continue;
       }
     }
+  }
+
+  if (writeLoader) {
+    confirmation = false;
+    Serial.println("\nThe bootloader comes with a set of default keys to evaluate signing and encryption process");
+    Serial.println("Do you want to load default keys? Y/[n]");
+
+    while (confirmation == false) {
+      if (Serial.available()) {
+        char choice = Serial.read();
+        switch (choice) {
+          case 'y':
+          case 'Y':
+            writeKeys    = true;
+            confirmation = true;
+            break;
+          case 'n':
+          case 'N':
+            confirmation = true;
+            break;
+          default:
+            continue;
+        }
+      }
+    }
+    applyUpdate(BOOTLOADER_ADDR);
   }
 }
 
@@ -135,8 +173,10 @@ void applyUpdate(uint32_t address) {
     }
   }
 
-  flash.program(&enc_priv_key, ENCRYPT_KEY_ADDR, ENCRYPT_KEY_SIZE);
-  flash.program(&rsa_pub_key, SIGNING_KEY_ADDR, SIGNING_KEY_SIZE);
+  if (writeKeys) {
+    flash.program(&enc_priv_key, ENCRYPT_KEY_ADDR, ENCRYPT_KEY_SIZE);
+    flash.program(&rsa_pub_key, SIGNING_KEY_ADDR, SIGNING_KEY_SIZE);
+  }
 
   Serial.println("Flashed 100%");
 
