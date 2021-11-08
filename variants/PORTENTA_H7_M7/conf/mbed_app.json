@@ -12,6 +12,7 @@
       "cordio.max-connections": 5,
       "target.mbed_app_start": "0x8040000",
       "target.mbed_app_size": "0x1A0000",
+      "target.restrict_size": "0x1A0000",
       "target.macros_add": [
         "USB_DYNAMIC_CONFIGURATION",
         "METAL_INTERNAL",
