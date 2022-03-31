@@ -12,6 +12,7 @@ public:
   Portenta_System() {};
   virtual bool begin();
   virtual bool enterLowPower();
+  virtual bool setRDPLevel(STM32H747_RDP level);
 };
 
 }

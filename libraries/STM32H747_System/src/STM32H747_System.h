@@ -3,11 +3,21 @@
 
 #include "Arduino.h"
 
+enum STM32H747_RDP
+  {
+    LEVEL_0 = 0xAA00U,
+    LEVEL_1 = 0x5500U,
+    LEVEL_2 = 0xCC00U
+  };
+
 class STM32H747 {
 
 public:
   virtual bool begin() = 0;
   virtual bool enterLowPower() = 0;
+  virtual bool setRDPLevel(STM32H747_RDP level) = 0;
+
+
 
 protected:
   uint8_t readReg(uint8_t subAddress);
