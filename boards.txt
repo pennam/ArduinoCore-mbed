@@ -407,10 +407,15 @@ nicla_sense.bootloader.file=NICLA/bootloader.hex
 
 ##############################################################
 
+menu.security=Security setting
+
 nicla_vision.name=Arduino Nicla Vision
 nicla_vision.build.core=arduino
 nicla_vision.build.crossprefix=arm-none-eabi-
 nicla_vision.build.compiler_path={runtime.tools.arm-none-eabi-gcc-7-2017q4.path}/bin/
+
+nicla_vision.menu.security.none=None
+nicla_vision.menu.security.sien=Signature + Encryption
 
 nicla_vision.build.variant=NICLA_VISION
 nicla_vision.build.mcu=cortex-m7
@@ -420,6 +425,15 @@ nicla_vision.build.extra_flags=
 nicla_vision.build.architecture=cortex-m7
 nicla_vision.build.board=NICLA_VISION
 nicla_vision.build.ldscript=linker_script.ld
+nicla_vision.build.slot_size=0x1E0000
+nicla_vision.build.header_size=0x20000
+nicla_vision.build.alignment=32
+nicla_vision.build.version=1.2.3+4
+nicla_vision.menu.security.sien.build.postbuild.cmd="{tools.imgtool.path}/{tools.imgtool.cmd}" {tools.imgtool.flags}
+nicla_vision.menu.security.sien.build.keys.keychain={runtime.platform.path}/libraries/MCUboot/default_keys
+nicla_vision.menu.security.sien.build.keys.sign_key=ecdsa-p256-signing-priv-key.pem
+nicla_vision.menu.security.sien.build.keys.encrypt_key=ecdsa-p256-encrypt-pub-key.pem
+nicla_vision.menu.security.none.build.postbuild.cmd="{tools.imgtool.path}/{tools.imgtool.cmd}" exit
 nicla_vision.build.postbuild.cmd="{tools.imgtool.path}/{tools.imgtool.cmd}" exit
 nicla_vision.compiler.mbed.arch.define=
 nicla_vision.compiler.mbed.defines={build.variant.path}/defines.txt
@@ -448,8 +462,10 @@ nicla_vision.upload.protocol=
 nicla_vision.upload.transport=
 nicla_vision.upload.vid=0x2341
 nicla_vision.upload.pid=0x035f
-nicla_vision.upload.address=0x08040000
-nicla_vision.upload.interface=0
+nicla_vision.menu.security.none.upload.interface=0
+nicla_vision.menu.security.sien.upload.interface=2
+nicla_vision.menu.security.none.upload.address=0x08040000
+nicla_vision.menu.security.sien.upload.address=0xA0000000
 nicla_vision.upload.use_1200bps_touch=true
 nicla_vision.upload.wait_for_upload_port=true
 nicla_vision.upload.native_usb=true
