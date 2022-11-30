@@ -141,8 +141,9 @@ static const uint8_t SCK  = PIN_SPI_SCK;
 #define HAS_UNIQUE_ISERIAL_DESCRIPTOR
 
 // Use these only if bootloader data is not available / valid
-#define _BOARD_VENDORID		0x2341
-#define _BOARD_PRODUCTID	0x0264
+#define _BOARD_VENDORID     0x2341
+#define _BOARD_PRODUCTID    0x0264
+#define _BOARD_REVISION     0xFFFF
 uint16_t _getVid_();
 uint16_t _getPid_();
 

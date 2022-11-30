@@ -295,32 +295,36 @@ bool getSecureFlashData() {
 }
 
 uint8_t* boardInfo() {
-    return _boardInfo;
+  return _boardInfo;
 }
 
 uint16_t boardRevision() {
+#if !defined FIRST_PROGRAMMING
+  if (has_otp_info) {
     return (((OptaBoardInfo*)_boardInfo)->revision);
+  }
+#else
+  return _BOARD_REVISION;
+#endif
 }
 
 uint16_t _getVid_() {
-#ifdef FIRST_PROGRAMMING
-    return _BOARD_VENDORID;
-#else
-    if (!has_otp_info) {
-      getSecureFlashData();
-    }
+#if !defined FIRST_PROGRAMMING
+  if (has_otp_info) {
     return ((OptaBoardInfo*)_boardInfo)->vid;
+  }
+#else
+  return _BOARD_VENDORID;
 #endif
 }
 
 uint16_t _getPid_() {
-#ifdef FIRST_PROGRAMMING
-    return _BOARD_PRODUCTID;
-#else
-    if (!has_otp_info) {
-      getSecureFlashData();
-    }
+#if !defined FIRST_PROGRAMMING
+  if (has_otp_info) {
     return ((OptaBoardInfo*)_boardInfo)->pid;
+  }
+#else
+  return _BOARD_PRODUCTID;
 #endif
 }
 
@@ -336,6 +340,8 @@ void initVariant() {
   // Disable the FMC bank1 (enabled after reset)
   // See https://github.com/STMicroelectronics/STM32CubeH7/blob/beced99ac090fece04d1e0eb6648b8075e156c6c/Projects/STM32H747I-DISCO/Applications/OpenAMP/OpenAMP_RTOS_PingPong/Common/Src/system_stm32h7xx.c#L215
   FMC_Bank1_R->BTCR[0] = 0x000030D2;
+
+  getSecureFlashData();
 }
 
 #ifdef SERIAL_CDC
