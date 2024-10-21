@@ -65,7 +65,13 @@ public:
      */
   int begin(const char* ssid);
 
-  void MACAddress(uint8_t *mac_address);
+  /*
+   * Get the interface MAC address.
+   *
+   * This function is deprecated and returns mac address in reversed order
+   * please use uint8_t* macAddress(uint8_t *mac_address) instead
+   */
+  void MACAddress(uint8_t *mac_address) __attribute__ ((deprecated));
 
   /* Start Wifi connection with passphrase
      * the most secure supported mode will be automatically selected

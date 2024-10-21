@@ -306,10 +306,13 @@ void arduino::WiFiClass::statusCallback(nsapi_event_t status, intptr_t param)
   }
 }
 
-void arduino::WiFiClass::MACAddress(uint8_t *mac_address)
-{
-  macAddress(mac_address);
+void arduino::WiFiClass::MACAddress(uint8_t *mac_address) {
+  /* implementation in SocketHelpers.cpp
+   * arduino::MbedSocketClass::macAddress(uint8_t* mac, bool reversed)
+   */
+  macAddress(mac_address, true);
 }
+
 
 #if defined(COMPONENT_4343W_FS)
 
