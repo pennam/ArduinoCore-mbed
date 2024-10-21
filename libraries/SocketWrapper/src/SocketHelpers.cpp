@@ -4,7 +4,11 @@ uint8_t* arduino::MbedSocketClass::macAddress(uint8_t* mac, bool reversed) {
   const char* mac_str = getNetwork()->get_mac_address();
   for (int b = 0; b < 6; b++) {
     uint32_t tmp;
-    sscanf(&mac_str[b * 2 + (b)], "%02x", (unsigned int*)&tmp);
+    if (mac_str) {
+      sscanf(&mac_str[b * 2 + (b)], "%02x", (unsigned int*)&tmp);
+    } else {
+      tmp = 0xFF;
+    }
     if (reversed) {
       mac[5 - b] = (uint8_t)tmp;
     } else {
@@ -15,7 +19,11 @@ uint8_t* arduino::MbedSocketClass::macAddress(uint8_t* mac, bool reversed) {
 }
 
 String arduino::MbedSocketClass::macAddress() {
-  return String(getNetwork()->get_mac_address());
+  const char* mac_str = getNetwork()->get_mac_address();
+  if (!mac_str) {
+    return String("ff:ff:ff:ff:ff:ff");
+  }
+  return String(mac_str);
 }
 
 int arduino::MbedSocketClass::hostByName(const char* aHostname, IPAddress& aResult) {
