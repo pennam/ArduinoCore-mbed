@@ -128,7 +128,7 @@ public:
 
   int hostByName(const char* aHostname, IPAddress& aResult);
 
-  uint8_t* macAddress(uint8_t* mac);
+  uint8_t* macAddress(uint8_t* mac, bool reversed = false);
   String macAddress();
 
   void setFeedWatchdogFunc(voidFuncPtr func);
