@@ -180,9 +180,11 @@ void arduino::MbedI2C::receiveThd() {
 					}
 				}
 				if (rxBuffer.available() > 0 && onReceiveCb != NULL) {
+					core_util_critical_section_exit();
 					onReceiveCb(rxBuffer.available());
+				} else {
+					core_util_critical_section_exit();
 				}
-				core_util_critical_section_exit();
 				//slave->stop();
 				break;
 		case mbed::I2CSlave::NoData:
