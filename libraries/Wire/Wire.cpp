@@ -153,6 +153,7 @@ void arduino::MbedI2C::receiveThd() {
 		int i = slave->receive();
 		int c = 0;
 		int buf_idx = 0;
+		int available = 0;
 		switch (i) {
 			case mbed::I2CSlave::ReadAddressed:
 				if (onRequestCb != NULL) {
@@ -179,11 +180,10 @@ void arduino::MbedI2C::receiveThd() {
 						break;
 					}
 				}
-				if (rxBuffer.available() > 0 && onReceiveCb != NULL) {
-					core_util_critical_section_exit();
-					onReceiveCb(rxBuffer.available());
-				} else {
-					core_util_critical_section_exit();
+				available = rxBuffer.available();
+				core_util_critical_section_exit();
+				if (available > 0 && onReceiveCb != NULL) {
+					onReceiveCb(available);
 				}
 				//slave->stop();
 				break;
