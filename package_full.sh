@@ -1,5 +1,5 @@
 #Get version from git(hub) tag
-export VERSION="4.3.1"
+export VERSION="4.4.0"
 
 FLAVOURS=`ls *.variables`
 
