@@ -42,12 +42,13 @@ jobs:
           extras/package_full.sh
           ls
           ls ../
+          echo $GITHUB_WORKSPACE
 
       - name: Save artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: $REPOSITORY_NAME*.tar.bz2
-          path: ../
+          name: ArduinoCore-mbed-packages
+          path: /home/runner/work/ArduinoCore-mbed/*.tar.bz2
 
       - name: Get architecture name
         run: |
